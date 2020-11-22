@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
   int input;
   cout << "Please enter the # node you want to start with (must be < size of matrix):  ";
   cin >> input;
-  cout << input;
   string file_name = argv[1];
   int size = atoi(argv[2]);
   ifstream file(file_name);
@@ -54,11 +53,13 @@ int main(int argc, char *argv[])
   for (int i = 0; i < size; i++){
     visited.push_back(0);
   }
-  string path = "0";
+  string path = "";
+  path.append(to_string(input));
+  
   /* INITIALIZATION */
-  for (int i =0; i < size; i++){
-    if (checkEdge(matrix, 0, i)){ // edge
-      nodes.push_back(node(matrix[0][i], 0));
+  for (int i = 0; i < size; i++){
+    if (checkEdge(matrix, input, i)){ // edge
+      nodes.push_back(node(matrix[input][i], 0));
     }
     else{ // not an edge
       nodes.push_back(node(INT_MAX, INT_MAX));
@@ -69,7 +70,8 @@ int main(int argc, char *argv[])
   for (int i = 0; i < size; i++){
     cout << "NODE" << i << "\t";
   }
-  cout << endl << "0\t0\t";
+  cout << endl << "0" << "\t" << path << "\t";
+
   for (node n : nodes){
     if (n.cost == INT_MAX && n.previous == INT_MAX){
       cout << "null\t";
@@ -82,7 +84,8 @@ int main(int argc, char *argv[])
  
   for (int i = 1; i < size; i++){
     node lowest(INT_MAX, 0);
-    for (int j = 1; j < nodes.size(); j++){
+    for (int j = 0; j < nodes.size(); j++){
+      if (j == input) continue;
       if (nodes[j].cost < lowest.cost){
 	lowest.cost = nodes[j].cost;
 	lowest.previous = j;
@@ -93,7 +96,8 @@ int main(int argc, char *argv[])
     visited[lowest.previous] = 1;
    
     // recalculate nodes with next lowest
-    for (int k = 1; k < nodes.size(); k++){
+    for (int k = 0; k < nodes.size(); k++){
+      if (k == input) continue;
       if (k != lowest.previous && visited[k] != 1 && checkEdge(matrix, lowest.previous, k)){
 	if (lowest.cost + matrix[lowest.previous][k] <= nodes[k].cost){
 	  nodes[k].cost = lowest.cost + matrix[lowest.previous][k];
@@ -117,29 +121,4 @@ int main(int argc, char *argv[])
     }
     cout << endl;
   }
-  
-  /*
-  vector<int> dist;
-  vector<bool> included;
-  for (int i = 0; i < size; i++){
-    dist.push_back(INT_MAX);
-    included.push_back(false);
-  }
-  dist[0] = 0;
-
-  for (int i = 0; i < size -1; i++){
-    int min = minDistance(dist, included, size);
-    included[min] = true;
-    for (int j = 0; j < size; j++){
-      if (!included[j] && matrix[min][j] && dist[min] != INT_MAX && dist[min] + matrix[min][j] < dist[j]){
-	dist[j] = dist[min] + matrix[min][j];
-      }
-    }
-  }
-
-  cout << "Vertex \t\t Distance from Source" << endl;
-  for (int i = 0; i < size; i++)
-    cout << i << "\t\t" << dist[i] << endl;
- 
-  */
 }
