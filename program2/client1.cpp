@@ -13,7 +13,8 @@
 #include <cmath>
 
 using namespace std;
-#define MAX 80 
+
+#define MESSAGESIZE 1000
 #define PORT 12000 
 
 // Driver code 
@@ -21,47 +22,45 @@ int main() {
     int sockfd;
     struct sockaddr_in servaddr; 
 
-    // Creating UDP socket file descriptor; SOCK_DGRAM used for UDP packets.
+    // Create TCP Socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) { 
-        perror("socket creation failed"); 
-        exit(EXIT_FAILURE); 
+    if (sockfd < 0) {
+      cout << "socket unable to be made " << endl;
+      exit(1); 
     }   
-    else
-        printf("Socket successfully created..\n"); 
+    else{
+      cout << "socket created!" << endl;	
+    }
    
-    // assign IP, PORT 
+    // Fill server information 
     servaddr.sin_family = AF_INET; 
     servaddr.sin_addr.s_addr = INADDR_ANY;
     servaddr.sin_port = htons(PORT);  
 
     // The connect() system call initiates a connection on a socket
-    int conn_obj = connect(sockfd, (const sockaddr*) &servaddr, sizeof(servaddr));
-    
-    // if the returned object is not zero, failure!
-    if(conn_obj !=0){
-        printf("connection with the server failed...\n"); 
-        exit(0); 
+    int socket_connection = connect(sockfd, (const sockaddr*) &servaddr, sizeof(servaddr));
+    if (socket_connection !=0){
+      cout << "connection failed" << endl;
+      exit(1);
     }
-    else
-        printf("connected to the server..\n"); 
+    else{
+      cout << "connected to server successfully" << endl;
+    }
     
-    // takes appropriate message from client 1
-    char client_message[256] = "This is the message from Client X: Alice";
+    // Client 1 Message
+    char client_message[MESSAGESIZE] = "This is the message from Client X: Alice";
 
-    // sends to the server socket
+    // Sends client_message to server
     send(sockfd, client_message, sizeof(client_message), 0);
 
-    // takes server response
-    char server_response[256];
+    char server_response[MESSAGESIZE];
 
-    //The recv() function shall return the length of the message written to the buffer pointed to by the buffer argument.
+    // Gets the response from the server using the recv() call and store in server_response
     recv(sockfd, &server_response, sizeof(server_response), 0);
-    printf("\n** Message sent to the Server ** \n%s\n\n", client_message);
-    printf("\n** Acknowledgement from Server ** \n%s\n", server_response);
-    printf("\n\n");
+    cout << endl << "Message sent to the server: " << endl << client_message << endl;
+    cout << endl << "Acknowledgement from Server: " << endl << server_response << endl;
   
-    // close the socket 
+    // Close socket
     close(sockfd); 
     return 0;
 }
