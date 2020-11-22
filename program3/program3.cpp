@@ -4,6 +4,7 @@
 #include <iterator>
 #include <climits>
 #include <algorithm>
+#include <stdio.h>
 
 using namespace std;
 
@@ -26,6 +27,10 @@ bool checkEdge(vector<vector<int>> &matrix, int num1, int num2){
 
 int main(int argc, char *argv[])
 {
+  if (argc < 2){
+    cout << "ERROR: usage: ./program3 [input.txt] [matrix size]" << endl;
+    exit(-1);
+  }
   int input;
   cout << "Please enter the # node you want to start with (must be < size of matrix):  ";
   cin >> input;
